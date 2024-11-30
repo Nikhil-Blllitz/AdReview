@@ -1,7 +1,6 @@
 from app import create_app
 import boto3
 import json
-#hello
 
 app = create_app()
 
