@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ad Generator</title>
+    <link rel="stylesheet" href="styles.css">  <!-- Link to external CSS (optional) -->
+</head>
+<body>
+    <div class="container">
+        <h1>Ad Generator</h1>
+
+        <!-- Form to input parameters -->
+        <form action="/generate" method="post">
+            <label for="project_name">Project Name:</label>
+            <input type="text" id="project_name" name="project_name" required><br><br>
+
+            <label for="description">Description:</label>
+            <input type="text" id="description" name="description"><br><br>
+
+            <label for="company_guidelines">Company Guidelines:</label>
+            <input type="text" id="company_guidelines" name="company_guidelines"><br><br>
+
+            <label for="ad_for_platform">Ad for the Platform:</label>
+            <input type="text" id="ad_for_platform" name="ad_for_platform" required><br><br>
+
+            <label for="platform_guidelines">Platform Guidelines:</label>
+            <input type="text" id="platform_guidelines" name="platform_guidelines"><br><br>
+
+            <label for="ad_type">Type of the Ad:</label>
+            <input type="text" id="ad_type" name="ad_type" required><br><br>
+
+            <button type="submit">Generate Ad</button>
+        </form>
+
+        <!-- Display generated ad content -->
+        {% if ad_content %}
+            <h2>Generated Ad Content:</h2>
+            <pre>{{ ad_content }}</pre>
+        {% endif %}
+
+        <!-- Button to go to the review page -->
+        <a href="/review"><button type="button">Go to Review</button></a>
+    </div>
+</body>
+</html>

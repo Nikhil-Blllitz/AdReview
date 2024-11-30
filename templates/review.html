@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Ad</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Ad Review</h1>
+
+        <!-- Form to input review parameters -->
+        <form action="/review" method="POST">
+            <label for="ad_content">Generated Ad Content:</label><br>
+            <textarea id="ad_content" name="ad_content" rows="5" cols="50" required>{{ ad_content }}</textarea><br><br>
+
+            <label for="generated_requirements">Generated Requirements:</label><br>
+            <textarea id="generated_requirements" name="generated_requirements" rows="5" cols="50" required></textarea><br><br>
+
+            <button type="submit">Generate Review</button>
+        </form>
+
+        <!-- Display review content -->
+        {% if review_content %}
+            <h2>Review Content:</h2>
+            <pre>{{ review_content }}</pre>
+        {% endif %}
+    </div>
+</body>
+</html>
