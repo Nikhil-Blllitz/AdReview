@@ -52,48 +52,6 @@ def generate(prompt_message):
 
     return formatted_ad
 
-def generate_review(given_ad, given_req):
-    prompt_message = (
-        f"Answer in the following format\n\n"
-        f"Guideline/Rule followed by Analysis of the Ad Content against the Requirements to specify if the guideline/rule is being followed\n\n"
-        f"Ad Content: {given_ad}\n\n"
-        f"Requirements: {given_req}"
-    )
-
-    kwargs = {
-        "modelId": "meta.llama3-8b-instruct-v1:0",
-        "contentType": "application/json",
-        "accept": "application/json",
-        "body": json.dumps({
-            "prompt": prompt_message,
-        })
-    }
-
-    # Calling the AWS Bedrock runtime API
-    response = bedrock_runtime.invoke_model(**kwargs)
-
-    # Log the response to inspect it
-    print(f"Response: {response}")
-
-    # Parsing the response body
-    body = json.loads(response['body'].read())
-
-    # Log the body to check for content
-    print(f"Response Body: {body}")
-
-    # Extracting the generated review or default message
-    review_content = body.get('generation', 'No content generated.')
-
-    return review_content
-
-    # Calling the AWS Bedrock runtime API
-    response = bedrock_runtime.invoke_model(**kwargs)
-
-    # Parsing the response body
-    body = json.loads(response['body'].read())
-
-    # Extracting the generated review or default message
-    review_content = body.get('generation', 'No content generated.')
 import time
 
 def generate_review(given_ad, given_req, max_retries=10, delay=1):
@@ -105,9 +63,11 @@ def generate_review(given_ad, given_req, max_retries=10, delay=1):
     retries = 0
     while retries < max_retries:
         prompt_message = (
+            f"The input is either text or text based description of the image, including violations etc. Do not do anything other than what is specified."
             f"Answer in the following format:"
-            f"Guideline/Rule followed by Analysis of the Ad Content against the Requirements to specify if the guideline/rule is being followed\n\n"
-            f"Calculate and display the percentage of guidelines being followed"
+            f"Guideline/Rule followed by Analysis text only of the Ad Content against the Requirements to specify if the guideline/rule is being followed\n\n"
+            f"Calculate and display the percentage of guidelines being followed in the following format:"
+            f"As per the review, the ad complies with X% of the required rules and guidelines for Y name, replace X with percentage calculated, replace Y with name of the platform"
             f"Ad Content: {given_ad}"
             f"Requirements: {given_req}"
         )
