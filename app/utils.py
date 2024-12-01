@@ -54,7 +54,8 @@ def generate(prompt_message):
 
 def generate_review(given_ad, given_req):
     prompt_message = (
-        f"Analyze the given Ad content. Analyze the given Requirements. Compare and check if each requirement is met. If each requirement is met mention so and vice versa. Give an overall review at the end. If a specific requirement is not present mention that requirement is not met.\n\n"
+        f"Answer in the following format\n\n"
+        f"Guideline/Rule followed by Analysis of the Ad Content against the Requirements to specify if the guideline/rule is being followed\n\n"
         f"Ad Content: {given_ad}\n\n"
         f"Requirements: {given_req}"
     )
@@ -64,14 +65,80 @@ def generate_review(given_ad, given_req):
         "contentType": "application/json",
         "accept": "application/json",
         "body": json.dumps({
-            "prompt": prompt_message
+            "prompt": prompt_message,
         })
     }
 
+    # Calling the AWS Bedrock runtime API
     response = bedrock_runtime.invoke_model(**kwargs)
 
+    # Log the response to inspect it
+    print(f"Response: {response}")
+
+    # Parsing the response body
     body = json.loads(response['body'].read())
 
+    # Log the body to check for content
+    print(f"Response Body: {body}")
+
+    # Extracting the generated review or default message
     review_content = body.get('generation', 'No content generated.')
 
     return review_content
+
+    # Calling the AWS Bedrock runtime API
+    response = bedrock_runtime.invoke_model(**kwargs)
+
+    # Parsing the response body
+    body = json.loads(response['body'].read())
+
+    # Extracting the generated review or default message
+    review_content = body.get('generation', 'No content generated.')
+import time
+
+def generate_review(given_ad, given_req, max_retries=10, delay=1):
+    """
+    Generates a review for the given ad content and requirements.
+    If no content is generated, it retries the API call up to `max_retries` times.
+    Each retry is delayed by `delay` seconds.
+    """
+    retries = 0
+    while retries < max_retries:
+        prompt_message = (
+            f"Answer in the following format:"
+            f"Guideline/Rule followed by Analysis of the Ad Content against the Requirements to specify if the guideline/rule is being followed\n\n"
+            f"Calculate and display the percentage of guidelines being followed"
+            f"Ad Content: {given_ad}"
+            f"Requirements: {given_req}"
+        )
+
+        kwargs = {
+                "modelId": "meta.llama3-8b-instruct-v1:0",
+                "contentType": "application/json",
+                "accept": "application/json",
+                "body": json.dumps({
+                    "prompt": prompt_message,
+                })
+        }
+
+            # Call the API
+        response = bedrock_runtime.invoke_model(**kwargs)
+
+            # Parse the response
+        body = json.loads(response['body'].read())
+
+            # Get the generated content
+        review_content = body.get('generation', '')
+
+        if review_content:
+                # If content is generated, return it
+                return review_content
+        else:
+                # If no content is generated, increment the retry counter and wait
+                retries += 1
+                print(f"Retry {retries}/{max_retries}... No content generated.")
+                time.sleep(delay)  # Delay before retrying
+
+    # If we reach here, it means the API failed to generate content after max_retries
+    return "No meaningful content generated after multiple attempts. Please try again later."
+
